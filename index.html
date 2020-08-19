@@ -177,11 +177,11 @@
 							corOlho = 'Outros';
 
 
-						if(pos & 1){
-							options += '<tr class="table-warning">';
-						} else {
-							options += '<tr class="table-success">';
-						}
+						//if(pos & 1){
+						//	options += '<tr class="table-warning">';
+						//} else {
+							options += '<tr>';
+						//}
 
 						//options += '<tr>';
 							options += '<td>';
@@ -191,7 +191,12 @@
 								options += response.results[i].name;
 							options += '</td>';
 							options += '<td>';
-								options += response.results[i].birth_year;
+
+								if (response.results[i].birth_year == 'unknown')
+									options += 'Desconhecido';
+								else
+									options += response.results[i].birth_year;
+
 							options += '</td>';
 							options += '<th>';
 								options += genero;
