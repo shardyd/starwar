@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Chard!</title>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  </head>
+  <body>
+
+    <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<h3>
+				Star Wars consulta de personagens
+			</h3>
+			<div class="row">
+				<div class="col-md-4">
+					<label for="nome_busca">
+						Nome:
+					</label>
+					<input type="text" id="nome_busca" name="nome_busca" class="form-control">
+				</div>
+				<div class="col-md-4">
+					<div class="dropdown">
+						<label for="dropdown_genero">
+							Gênero:
+						</label><br/>
+						<select class="form-control" name="dropdown_genero" id="dropdown_genero">
+							<option value='T' selected>TODOS</option>
+							<option value="F">Feminino</option>
+							<option value="M">Masculino</option>
+							<option value="O">Outros</option>
+						</select>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<label for="btn_buscar_personagem">
+						Ação:
+					</label><br/>
+				<button type="button" class="btn btn-success" id="btn_buscar_personagem" onclick="buscarPersonagem()">
+						Buscar Personagem
+					</button>
+				</div>
+			</div>
+		<br/>
+		<br/>
+			<table class="table table-sm table-hover table-striped">
+				<thead>
+					<tr>
+						<th>
+							#
+						</th>
+						<th>
+							Nome
+						</th>
+						<th>
+							Ano de Aniversário
+						</th>
+						<th>
+							Gênero
+						</th>
+						<th>
+							Cor dos Olhos
+						</th>
+						<th>
+							Filmes Que Trabalhei
+						</th>
+					</tr>
+				</thead>
+				<tbody id="dadosBusca">
+				</tbody>
+			</table>
+			*BBY antes da batalha de Yavin<br/>
+			**ABY depois da batalha de Yavin
+	</div>
+	</div>
+</div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+	<script src="js/scripts.js"></script>
+	<script>
+		$(function() {
+			$(document).ready(function () {
+				
+				buscarPersonagem();
+
+			});
+		});
+
+		function buscarPersonagem() {
+			$('#dadosBusca').html('<h3 style="color:green">Buscando informações, aguarde!</h3>').show();
+
+			var settings = {
+			"url": "https://swapi.dev/api/people/",
+			"method": "GET",
+			"timeout": 0,
+			"headers": {
+				"Content-Type": "text/plain"
+			},
+			"data": "{\n   \"chavelayout\":\"vi_int_envio_embalagem\",\n   \"list\":[\n      {\n         \"i\":\"5\",\n         \"idproduto\":\"54\",\n         \"barra\":\"58251152\",\n         \"dr\":\"UN\",\n         \"descr\":\"UNIDADE\",\n         \"apresentacao\":\"1X1\",\n         \"fatorconv\":\"1\",\n         \"altura\":\"1\",\n         \"largura\":\"1\",\n         \"comprimento\":\"1\",\n         \"compra\":\"N\",\n         \"venda\":\"S\",\n         \"lastro\":\"1\",\n         \"qtdecamada\":\"1\",\n         \"pesobruto\":\"1\",\n         \"pesoliquido\":\"1\",\n         \"su\":\"\",\n         \"empmax\":\"1\",\n         \"ativo\":\"S\",\n         \"etiqueta\":\"S\",\n         \"caixafechada\":\"S\",\n         \"controlaestoque\":\"S\",\n         \"seqemb\":\"\",\n         \"excluirembalagem\":\"N\",\n         \"codprodutodep\":\"58251152\",\n         \"codproduto\":\"58251152\",\n         \"dr2\":\"UN\"\n      }\n   ]\n}",
+
+			};
+
+			$.ajax(settings).done(function (response) {
+				//alert(response.results.length);
+				var generoBusca = $('#dropdown_genero').val();
+				var nomeBusca = $('#nome_busca').val();
+
+				nomeBusca = nomeBusca.toUpperCase();
+                var pos = 1;
+				var options;
+				for (var i = 0; i < response.results.length; i++) {
+					var listaRegGrade = 'S';
+					if (nomeBusca != ''){
+						var strNome = response.results[i].name;
+						strNome = strNome.toUpperCase();
+  						var boolAchou = strNome.includes(nomeBusca);
+
+						if (!boolAchou){
+							listaRegGrade = 'N';
+						}
+					}
+
+					//--verifica se é feminino
+					if (generoBusca == 'F'){
+						if (response.results[i].gender != 'female'){
+							listaRegGrade = 'N';
+						}
+					}
+
+					//--verifica se é masculino
+					if (generoBusca == 'M'){
+						if (response.results[i].gender != 'male'){
+							listaRegGrade = 'N';
+						}
+					}
+
+					//--verifica se é outros
+					if (generoBusca == 'O'){
+						if ((response.results[i].gender == 'male') || (response.results[i].gender == 'female')) {
+							listaRegGrade = 'N';
+						}
+					}
+
+
+					if (listaRegGrade == 'S'){
+						var genero = response.results[i].gender;
+						if (genero == 'male')
+							genero = 'Masculino';
+						else if (genero == 'female')
+							genero = 'Feminino';
+						else
+							genero = 'Outros';
+
+						var corOlho = response.results[i].eye_color;
+						if (corOlho == 'blue')
+							corOlho = 'Azul';
+						else if (corOlho == 'yellow')
+							corOlho = 'Amarelo';
+						else if (corOlho == 'red')
+							corOlho = 'Vermelho';
+						else if (corOlho == 'brown')
+							corOlho = 'Marron';
+						else if (corOlho == 'blue-gray')
+							corOlho = 'Azul Acinzentado';
+						else
+							corOlho = 'Outros';
+
+
+						if(pos & 1){
+							options += '<tr class="table-warning">';
+						} else {
+							options += '<tr class="table-success">';
+						}
+
+						//options += '<tr>';
+							options += '<td>';
+								options += pos;
+							options += '</td>';
+							options += '<td>';
+								options += response.results[i].name;
+							options += '</td>';
+							options += '<td>';
+								options += response.results[i].birth_year;
+							options += '</td>';
+							options += '<th>';
+								options += genero;
+							options += '</th>';
+							options += '<th>';
+								options += corOlho;
+							options += '</th>';
+							options += '<th>';
+
+								/*var str = response.results[i].films;
+								var listaFilmes = '';
+								for (var x = 0; x < str.length; x++) {
+									listaFilmes += str[x]+'|';
+								}*/
+
+								options += '<a onclick="callmodal('+"'"+response.results[i].films+"'"+')" ><i class="fa fa-plus"> Clique e descubra</i></a>';
+
+							options += '</th>';
+						options += '</tr>';
+						pos++;
+					}
+
+
+					//alert(response.results[i].name);
+				}
+				
+				if (pos == 1){
+					$('#dadosBusca').html('<h3 style="color:red">Sem informações para os filtros selecionados</h3>').show();	
+				} else {
+					$('#dadosBusca').html(options).show();
+				}
+
+				console.log(response);
+				//alert('busca finalizada');
+			});
+		}
+	
+		function callmodal(strFilms){
+			$('#dadosBuscaModal').html('').show();
+			var myarr = strFilms.split(",");
+			var listaFilmes;
+
+			for (var x = 0; x < myarr.length; x++) {
+				var settings = {
+					"url": myarr[x],
+					"method": "GET",
+					"timeout": 0,
+				};
+
+				$.ajax(settings).done(function (responseModal) {
+//alert(responseModal.title);
+					listaFilmes += '<tr>';
+						listaFilmes += '<td>';
+							var dataFormatada =new Date(responseModal.release_date).toLocaleDateString('pt-br');
+							listaFilmes += dataFormatada;
+						listaFilmes += '</td>';
+						listaFilmes += '<td>';
+							listaFilmes += responseModal.title;
+						listaFilmes += '</td>';
+					listaFilmes += '</tr>';
+					$('#dadosBuscaModal').html(listaFilmes).show();
+				});
+				
+				//alert(listaFilmes);
+			}
+
+			
+			$('#modal-filmes').modal('show');
+
+		}
+
+	
+	</script>
+</body>
+
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<div class="modal fade" id="modal-filmes" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="myModalLabel">
+								Lista de Filmes que Participei
+							</h5> 
+							<button type="button" class="close" data-dismiss="modal">
+								<span aria-hidden="true">×</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<table class="table table-sm table-hover table-striped">
+								<thead>
+									<tr>
+										<th>
+											Data Lançamento
+										</th>
+										<th>
+											Nome do Filme
+										</th>
+									</tr>
+								</thead>
+								<tbody id="dadosBuscaModal">
+								</tbody>
+							</table>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">
+								Fechar
+							</button>
+						</div>
+					</div>
+					
+				</div>
+				
+			</div>
+			
+		</div>
+	</div>
+</div>
+
+</html>
